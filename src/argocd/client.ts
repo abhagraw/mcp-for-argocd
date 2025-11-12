@@ -16,10 +16,10 @@ export class ArgoCDClient {
   private apiToken: string;
   private client: HttpClient;
 
-  constructor(baseUrl: string, apiToken: string) {
+  constructor(baseUrl: string, apiToken: string, usesCookie: boolean = false) {
     this.baseUrl = baseUrl;
     this.apiToken = apiToken;
-    this.client = new HttpClient(this.baseUrl, this.apiToken);
+    this.client = new HttpClient(baseUrl, apiToken, usesCookie);
   }
 
   public async listApplications(params?: { search?: string; limit?: number; offset?: number }) {

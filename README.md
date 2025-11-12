@@ -114,15 +114,18 @@ The server provides the following ArgoCD management tools:
 ```json
 {
   "mcpServers": {
-    "argocd-mcp": {
-      "command": "npx",
+    "argocd-mcp-local": {
+      "command": "node",
       "args": [
-        "argocd-mcp@latest",
+        "/path/to/repo/mcp-for-argocd/dist/index.js",
         "stdio"
       ],
       "env": {
         "ARGOCD_BASE_URL": "<argocd_url>",
-        "ARGOCD_API_TOKEN": "<argocd_token>"
+        "ARGOCD_API_TOKEN": "<argocd_session_cookie_jwt>",
+        "MCP_READ_ONLY": "true",
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0",
+        "ARGOCD_USE_COOKIE": "true"
       }
     }
   }
@@ -172,9 +175,9 @@ cd mcp-for-argocd
 pnpm install
 ```
 
-3. Start the development server with hot reloading enabled:
+3. Build changes locally:
 ```bash
-pnpm run dev
+pnpm build
 ```
 Once the server is running, you can utilize the MCP server within Visual Studio Code or other MCP client.
 

@@ -11,14 +11,21 @@ export class HttpClient {
   public readonly apiToken: string;
   public readonly headers: Record<string, string>;
 
-  constructor(baseUrl: string, apiToken: string) {
+  constructor(baseUrl: string, apiToken: string, usesCookie: boolean = false) {
     this.baseUrl = baseUrl;
     this.apiToken = apiToken;
     this.headers = {
-      Authorization: `Bearer ${this.apiToken}`,
       'Content-Type': 'application/json'
     };
+
+    // Add authentication based on method
+    if (usesCookie) {
+      this.headers['Cookie'] = `argocd.token=${this.apiToken}`;
+    } else {
+      this.headers['Authorization'] = `Bearer ${this.apiToken}`;
+    }
   }
+
 
   private async request<R>(
     url: string,

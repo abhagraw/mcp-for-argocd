@@ -8,9 +8,11 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 
 export const connectStdioTransport = () => {
+  const usesCookie = process.env.ARGOCD_USE_COOKIE === 'true';
   const server = createServer({
     argocdBaseUrl: process.env.ARGOCD_BASE_URL || '',
-    argocdApiToken: process.env.ARGOCD_API_TOKEN || ''
+    argocdApiToken: process.env.ARGOCD_API_TOKEN || '',
+    usesCookie: usesCookie
   });
 
   logger.info('Connecting to stdio transport');
@@ -22,9 +24,13 @@ export const connectSSETransport = (port: number) => {
   const transports: { [sessionId: string]: SSEServerTransport } = {};
 
   app.get('/sse', async (req, res) => {
+    const usesCookie =
+      req.headers['x-argocd-use-cookie'] === 'true' ||
+      process.env.ARGOCD_USE_COOKIE === 'true';
     const server = createServer({
       argocdBaseUrl: (req.headers['x-argocd-base-url'] as string) || '',
-      argocdApiToken: (req.headers['x-argocd-api-token'] as string) || ''
+      argocdApiToken: (req.headers['x-argocd-api-token'] as string) || '',
+      usesCookie: usesCookie
     });
 
     const transport = new SSEServerTransport('/messages', res);
@@ -87,9 +93,14 @@ export const connectHttpTransport = (port: number) => {
         }
       };
 
+      const usesCookie =
+        req.headers['x-argocd-use-cookie'] === 'true' ||
+        process.env.ARGOCD_USE_COOKIE === 'true';
+
       const server = createServer({
         argocdBaseUrl,
-        argocdApiToken
+        argocdApiToken,
+        usesCookie
       });
 
       await server.connect(transport);

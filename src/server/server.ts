@@ -13,7 +13,9 @@ import {
 type ServerInfo = {
   argocdBaseUrl: string;
   argocdApiToken: string;
+  usesCookie?: boolean; // New optional field
 };
+
 
 export class Server extends McpServer {
   private argocdClient: ArgoCDClient;
@@ -23,7 +25,12 @@ export class Server extends McpServer {
       name: packageJSON.name,
       version: packageJSON.version
     });
-    this.argocdClient = new ArgoCDClient(serverInfo.argocdBaseUrl, serverInfo.argocdApiToken);
+    this.argocdClient = new ArgoCDClient(
+      serverInfo.argocdBaseUrl,
+      serverInfo.argocdApiToken,
+      serverInfo.usesCookie ?? false
+    );
+
 
     const isReadOnly =
       String(process.env.MCP_READ_ONLY ?? '')
