@@ -22,10 +22,57 @@ export class ArgoCDClient {
     this.client = new HttpClient(baseUrl, apiToken, usesCookie);
   }
 
-  public async listApplications(params?: { search?: string; limit?: number; offset?: number }) {
+  public async listApplications(params?: {
+    search?: string;
+    limit?: number;
+    offset?: number;
+    syncStatus?: string[];
+    healthStatus?: string[];
+    project?: string;
+    selector?: string;
+    repo?: string;
+    cluster?: string;
+    namespace?: string;
+    autoSyncEnabled?: boolean;
+    appNamespace?: string;
+  }) {
+    // Build query parameters
+    const queryParams: Record<string, any> = {};
+
+    if (params?.search) {
+      queryParams.search = params.search;
+    }
+    if (params?.syncStatus?.length) {
+      queryParams.syncStatuses = params.syncStatus;
+    }
+    if (params?.healthStatus?.length) {
+      queryParams.healthStatuses = params.healthStatus;
+    }
+    if (params?.project) {
+      queryParams.projects = params.project;
+    }
+    if (params?.selector) {
+      queryParams.selector = params.selector;
+    }
+    if (params?.repo) {
+      queryParams.repo = params.repo;
+    }
+    if (params?.cluster) {
+      queryParams.clusters = params.cluster;
+    }
+    if (params?.namespace) {
+      queryParams.namespaces = params.namespace;
+    }
+    if (params?.autoSyncEnabled !== undefined) {
+      queryParams.autoSyncEnabled = params.autoSyncEnabled;
+    }
+    if (params?.appNamespace) {
+      queryParams.appNamespace = params.appNamespace;
+    }
+
     const { body } = await this.client.get<V1alpha1ApplicationList>(
       `/api/v1/applications`,
-      params?.search ? { search: params.search } : undefined
+      Object.keys(queryParams).length > 0 ? queryParams : undefined
     );
 
     // Strip heavy fields to reduce token usage

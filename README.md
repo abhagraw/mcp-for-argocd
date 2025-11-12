@@ -39,6 +39,19 @@ The server provides the following ArgoCD management tools:
 
 ### Application Management
 - `list_applications`: List and filter all applications
+  - **Filtering options:**
+    - `search`: Partial match search on application name
+    - `syncStatus`: Filter by sync status (Synced, OutOfSync, Unknown)
+    - `healthStatus`: Filter by health status (Healthy, Progressing, Degraded, Unknown, Missing)
+    - `project`: Filter by Argo CD project name
+    - `selector`: Filter using Kubernetes label selectors (e.g., "env=prod,tier=backend")
+    - `repo`: Filter by source repository URL
+    - `cluster`: Filter by destination cluster
+    - `namespace`: Filter by destination Kubernetes namespace
+    - `autoSyncEnabled`: Filter by auto-sync status (true/false)
+    - `appNamespace`: Filter by the namespace where the application is defined
+    - `limit`: Maximum number of results to return
+    - `offset`: Pagination offset
 - `get_application`: Get detailed information about a specific application
 - `create_application`: Create a new application
 - `update_application`: Update an existing application

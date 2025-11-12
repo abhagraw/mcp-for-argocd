@@ -16,7 +16,6 @@ type ServerInfo = {
   usesCookie?: boolean; // New optional field
 };
 
-
 export class Server extends McpServer {
   private argocdClient: ArgoCDClient;
 
@@ -31,7 +30,6 @@ export class Server extends McpServer {
       serverInfo.usesCookie ?? false
     );
 
-
     const isReadOnly =
       String(process.env.MCP_READ_ONLY ?? '')
         .trim()
@@ -40,7 +38,7 @@ export class Server extends McpServer {
     // Always register read/query tools
     this.addJsonOutputTool(
       'list_applications',
-      'list_applications returns list of applications',
+      'list_applications returns list of applications with optional filtering by status, health, project, and other criteria',
       {
         search: z
           .string()
@@ -63,13 +61,81 @@ export class Server extends McpServer {
           .optional()
           .describe(
             'Number of applications to skip before returning results. Use with limit for pagination. Optional.'
+          ),
+        syncStatus: z
+          .array(z.string())
+          .optional()
+          .describe(
+            'Filter applications by sync status. Accepted values: Synced, OutOfSync, Unknown. Optional.'
+          ),
+        healthStatus: z
+          .array(z.string())
+          .optional()
+          .describe(
+            'Filter applications by health status. Accepted values: Healthy, Progressing, Degraded, Unknown, Missing. Optional.'
+          ),
+        project: z
+          .string()
+          .optional()
+          .describe('Filter applications by Argo CD project name. Optional.'),
+        selector: z
+          .string()
+          .optional()
+          .describe(
+            'Filter applications using Kubernetes label selector (e.g., "env=prod,tier=backend"). Optional.'
+          ),
+        repo: z
+          .string()
+          .optional()
+          .describe('Filter applications by source repository URL. Optional.'),
+        cluster: z
+          .string()
+          .optional()
+          .describe('Filter applications by destination cluster. Optional.'),
+        namespace: z
+          .string()
+          .optional()
+          .describe('Filter applications by destination Kubernetes namespace. Optional.'),
+        autoSyncEnabled: z
+          .boolean()
+          .optional()
+          .describe(
+            'Filter applications by auto-sync status. Set to true for auto-synced apps, false for manual-sync apps. Optional.'
+          ),
+        appNamespace: z
+          .string()
+          .optional()
+          .describe(
+            'Filter applications by the Argo CD application namespace where they are defined. Optional.'
           )
       },
-      async ({ search, limit, offset }) =>
+      async ({
+        search,
+        limit,
+        offset,
+        syncStatus,
+        healthStatus,
+        project,
+        selector,
+        repo,
+        cluster,
+        namespace,
+        autoSyncEnabled,
+        appNamespace
+      }) =>
         await this.argocdClient.listApplications({
           search: search ?? undefined,
           limit,
-          offset
+          offset,
+          syncStatus,
+          healthStatus,
+          project,
+          selector,
+          repo,
+          cluster,
+          namespace,
+          autoSyncEnabled,
+          appNamespace
         })
     );
     this.addJsonOutputTool(
