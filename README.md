@@ -60,57 +60,23 @@ The server provides the following ArgoCD management tools:
 - Node.js (v18 or higher recommended)
 - pnpm package manager (for development)
 - Argo CD instance with API access
-- Argo CD API token (see the [docs for instructions](https://argo-cd.readthedocs.io/en/stable/developer-guide/api-docs/#authorization)) 
+- Argo CD API token (see the [docs for instructions](https://argo-cd.readthedocs.io/en/stable/developer-guide/api-docs/#authorization))
 
-### Usage with Cursor
-1. Follow the [Cursor documentation for MCP support](https://docs.cursor.com/context/model-context-protocol), and create a `.cursor/mcp.json` file in your project:
-```json
-{
-  "mcpServers": {
-    "argocd-mcp": {
-      "command": "npx",
-      "args": [
-        "argocd-mcp@latest",
-        "stdio"
-      ],
-      "env": {
-        "ARGOCD_BASE_URL": "<argocd_url>",
-        "ARGOCD_API_TOKEN": "<argocd_token>"
-      }
-    }
-  }
-}
+### Usage with Claude Code
+
+1. Add the MCP server to Claude Code using one of the following options:
+
+**Option A: Using `claude mcp add` command:**
+```bash
+claude mcp add --transport stdio argocd-mcp-local \
+  --env ARGOCD_BASE_URL=$ARGOCD_BASE_URL \
+  --env ARGOCD_API_TOKEN=$ARGOCD_API_TOKEN \
+  --env ARGOCD_USE_COOKIE=$ARGOCD_USE_COOKIE \
+  -- node /Users/abhishek.agrawal/PycharmProjects/mcp-for-argocd/dist/index.js stdio
 ```
 
-2. Start a conversation with Agent mode to use the MCP.
+**Option B: Using `mcp.json`:**
 
-### Usage with VSCode
-
-1. Follow the [Use MCP servers in VS Code documentation](https://code.visualstudio.com/docs/copilot/chat/mcp-servers), and create a `.vscode/mcp.json` file in your project:
-```json
-{
-  "servers": {
-    "argocd-mcp-stdio": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "argocd-mcp@latest",
-        "stdio"
-      ],
-      "env": {
-        "ARGOCD_BASE_URL": "<argocd_url>",
-        "ARGOCD_API_TOKEN": "<argocd_token>"
-      }
-    }
-  }
-}
-```
-
-2. Start a conversation with an AI assistant in VS Code that supports MCP.
-
-### Usage with Claude Desktop
-
-1. Follow the [MCP in Claude Desktop documentation](https://modelcontextprotocol.io/quickstart/user), and create a `claude_desktop_config.json` configuration file:
 ```json
 {
   "mcpServers": {
@@ -123,16 +89,12 @@ The server provides the following ArgoCD management tools:
       "env": {
         "ARGOCD_BASE_URL": "<argocd_url>",
         "ARGOCD_API_TOKEN": "<argocd_session_cookie_jwt>",
-        "MCP_READ_ONLY": "true",
-        "NODE_TLS_REJECT_UNAUTHORIZED": "0",
         "ARGOCD_USE_COOKIE": "true"
       }
     }
   }
 }
 ```
-
-2. Configure Claude Desktop to use this configuration file in settings.
 
 ### Self-signed Certificates
 
@@ -179,7 +141,7 @@ pnpm install
 ```bash
 pnpm build
 ```
-Once the server is running, you can utilize the MCP server within Visual Studio Code or other MCP client.
+Once the build is ready, use it in the claude code configuration.
 
 ### Upgrading ArgoCD Types
 
